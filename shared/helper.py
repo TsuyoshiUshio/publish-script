@@ -24,7 +24,7 @@ def getUserConfirm(display):
         elif userInput == "ABORT":
             sys.exit()
         else:
-            print("Excuse me sir!??")
+            print("Excuse me??")
 
 # for some commands, returnCode means success
 # for others you need to verify the output string yourself
