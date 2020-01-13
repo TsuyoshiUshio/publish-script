@@ -2,8 +2,22 @@ $ErrorActionPreference = 'Stop';
 
 $packageName= '$PACKAGENAME'
 $toolsDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$url        = '$ZIPURL'
-$checksum   = '$CHECKSUM'
+$url_x86        = '$ZIPURL_X86'
+$url_x64        = '$ZIPURL_X64'
+$checksum_x86   = '$CHECKSUM_X86'
+$checksum_x64   = '$CHECKSUM_X64'
+
+# By default, we want 32-bit installer
+$url = $url_x86
+$checksum = $checksum_x86
+
+# If specifically asked for 64-bit, we use that
+$pp = Get-PackageParameters
+if ($pp['x64'] -eq 'true')
+{
+  $url = $url_x64
+  $checksum = $checksum_x64
+}
 
 $packageArgs = @{
   packageName   = $packageName

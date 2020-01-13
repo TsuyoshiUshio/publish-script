@@ -28,9 +28,10 @@ def getChocoVersion(version):
 # output a deb nupkg
 # depends on chocolatey
 def preparePackage():
-    # for windows, its x86 version only
-    fileName = f"Azure.Functions.Cli.win-x86.{constants.VERSION}.zip"
-    url = f'https://functionscdn.azureedge.net/public/{constants.VERSION}/{fileName}'
+    fileName_x86 = f"Azure.Functions.Cli.win-x86.{constants.VERSION}.zip"
+    fileName_x64 = f"Azure.Functions.Cli.win-x64.{constants.VERSION}.zip"
+    url_x86 = f'https://functionscdn.azureedge.net/public/{constants.VERSION}/{fileName_x86}'
+    url_x64 = f'https://functionscdn.azureedge.net/public/{constants.VERSION}/{fileName_x64}'
 
     # version used in url is provided from user input
     # version used for packaging nuget packages needs a slight modification
@@ -38,12 +39,18 @@ def preparePackage():
 
     # download the zip
     # output to local folder
-    if not os.path.exists(fileName):
-        print(f"downloading from {url}")
-        wget.download(url)
+    #  -- For 32 bit
+    if not os.path.exists(fileName_x86):
+        print(f"downloading from {url_x86}")
+        wget.download(url_x86)
+    #  -- For 64 bit
+    if not os.path.exists(fileName_x64):
+        print(f"downloading from {url_x64}")
+        wget.download(url_x64)
 
-    # get the checksum
-    fileHash = produceHashForfile(fileName, HASH)
+    # get the checksums
+    fileHash_x86 = produceHashForfile(fileName_x86, HASH)
+    fileHash_x64 = produceHashForfile(fileName_x64, HASH)
     
     tools = os.path.join(constants.BUILDFOLDER, "tools")
     os.makedirs(tools)
@@ -56,7 +63,8 @@ def preparePackage():
     t = Template(stringData)
     with open(os.path.join(tools, "chocolateyinstall.ps1"), "w") as f:
         print("writing install powershell script")
-        f.write(t.safe_substitute(ZIPURL=url, PACKAGENAME=constants.PACKAGENAME, CHECKSUM=fileHash, HASHALG=HASH))
+        f.write(t.safe_substitute(ZIPURL_X86=url_x86, ZIPURL_X64=url_x64, PACKAGENAME=constants.PACKAGENAME,
+                                  CHECKSUM_X86=fileHash_x86, CHECKSUM_X64=fileHash_x64, HASHALG=HASH))
 
     # write nuspec package metadata
     with open(os.path.join(scriptDir,"nuspec_template")) as f:
