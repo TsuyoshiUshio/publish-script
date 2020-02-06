@@ -116,6 +116,9 @@ def linuxOutput(buildFolder):
     # octal
     os.chmod(exeFullPath, 0o755)
 
+    print(f"change {usrlibFunc}/gozip permission to 755")
+    os.chmod(f"{usrlibFunc}/gozip", 0o755)
+
 def chmodFolderAndFiles(folder):
     print(f"change permission of files in {folder}")
     os.chmod(folder, 0o755)
